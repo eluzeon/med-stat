@@ -4,8 +4,9 @@ from statistics import mean
 from src.domain.models.measurement import Measurement, Tap
 from src.domain.models.measurement_pair import PairSet, GroupPairSet
 from src.services.csv_reader import load_taps
+from src.services.dao import memoize
 from src.services.dao.measurements import save_measurements, get_filtered_measurements, object_filter, side_filter, \
-    get_measurements, save_all_groups
+    get_measurements, save_all_groups, save_taps, GROUPS_KEY
 from src.services.grouper import get_object_side_groups
 from src.services.pairset_builder import SimpleOrderPairSetBuilder
 
@@ -16,12 +17,15 @@ def load_all_measurements(rows: typing.Iterable[str]) -> typing.Iterable[Measure
     :param rows: строки или контент файла
     :return: список Measurement
     """
-    mss = taps_to_measurements(load_taps(rows))
+    taps = load_taps(rows)
+    mss = taps_to_measurements(taps)
     save_measurements(mss)
+    save_taps(taps)
 
     return mss
 
 
+@memoize(GROUPS_KEY)
 def get_all_groups() -> list[GroupPairSet]:
     mss = get_measurements()
     groups = get_object_side_groups(mss)
@@ -36,9 +40,6 @@ def get_all_groups() -> list[GroupPairSet]:
                 pairset=builder.build_pairs(group.measurements)
             )
         )
-
-    save_all_groups(out)
-
     return out
 
 

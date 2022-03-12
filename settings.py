@@ -30,6 +30,16 @@ EXPORT_PATH = os.path.join(
     "output"
 )
 
+EXCEL_FILE_NAME = "data.xls"
+# список из 5 строк-цветов
+EXCEL_DATA_COLORS = [
+    '#FFCC00',
+    '#00ff00',
+    '#C0C0C0',
+    '#FFCB99',
+    '#6486A8'
+]
+
 EXPORT_DPI = 200
 
 #######

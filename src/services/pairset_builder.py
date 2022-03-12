@@ -42,8 +42,8 @@ class SimpleOrderPairSetBuilder(PairSetBuilder):
                 continue
 
             packs.append(pack)
-            pack = []
-            pack_last = None
+            pack = [meas]
+            pack_last = meas
 
         # проходимся по каждой группе и выбираем последнее измерение
         prev_pack: typing.Optional[list[Measurement]] = None
@@ -63,5 +63,6 @@ class SimpleOrderPairSetBuilder(PairSetBuilder):
                     after=curr
                 )
             )
+            prev_pack = None
 
         return result

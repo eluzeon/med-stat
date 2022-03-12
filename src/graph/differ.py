@@ -17,7 +17,7 @@ class DiffValue:
 def build_diff_graph(label: str, values: typing.Iterable[DiffValue],
                      right_color: typing.Optional[str] = None,
                      left_color: typing.Optional[str] = None,
-                     width: typing.Optional[float] = 0.35,
+                     width: typing.Optional[float] = 0.45,
                      round_digs: typing.Optional[int] = 2) -> Figure:
     labels = [v.name for v in values]
 
@@ -42,7 +42,7 @@ def build_diff_graph(label: str, values: typing.Iterable[DiffValue],
     ax.bar_label(rects1, padding=3)
     ax.bar_label(rects2, padding=3)
 
-    fig.tight_layout()
     fig.set_figwidth(13)
+    fig.tight_layout()
 
     return fig

@@ -2,6 +2,8 @@ import dataclasses
 import datetime
 import typing
 
+from marshmallow_dataclass import class_schema
+
 from src.domain.models import Measurement
 
 
@@ -14,6 +16,7 @@ class MeasurementPair:
     after: Measurement
 
 
+MeasurementPairSchema = class_schema(MeasurementPair)
 PairSet = typing.Iterable[MeasurementPair]
 
 

@@ -1,7 +1,9 @@
+import time
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QPushButton, QLabel, QFileDialog, QVBoxLayout
 
-from src.app.ui.workers.export_worker import ExportWorker
+from src.app.ui.workers.export_worker import ExportGraphWorker, ExportExcelWorker
 from src.app.ui.workers.threads import run_in_thread
 
 
@@ -39,9 +41,10 @@ class QActionExportGraphs(QActionButton):
         self._run_export_thread(dir_path)
 
     def _run_export_thread(self, dir_path: str):
-        worker = ExportWorker(dir_path)
+        worker = ExportGraphWorker(dir_path)
 
         run_in_thread(worker, parent=self)
+        time.sleep(0.01)
         self.button.setEnabled(False)
         self.button.setText("Подождите...")
 
@@ -58,3 +61,21 @@ class QActionExportExcel(QActionButton):
             "Выгрузить в EXCEL",
             "Выгрузка данных файла в EXCEL с подсчитанными данными"
         )
+
+    def handle_on_click(self):
+        dir_path = QFileDialog.getExistingDirectory(self)
+        self._run_export_thread(dir_path)
+
+    def _run_export_thread(self, dir_path: str):
+        worker = ExportExcelWorker(dir_path)
+
+        run_in_thread(worker, parent=self)
+        time.sleep(0.01)
+        self.button.setEnabled(False)
+        self.button.setText("Подождите...")
+
+        def on_finish():
+            self.button.setEnabled(True)
+            self.button.setText(self.title)
+
+        worker.finished.connect(on_finish)
