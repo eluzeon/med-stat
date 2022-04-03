@@ -1,7 +1,8 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QGridLayout
 
-from src.app.ui.components.action_button import QActionButton, QActionExportGraphs, QActionExportExcel
+from src.app.ui.components.action_button import QActionButton, QActionExportGraphs, QActionExportExcel, \
+    QActionExportDetailGraphs
 
 
 class QActionGrid(QWidget):
@@ -23,5 +24,6 @@ class QActionGrid(QWidget):
         return [
             QActionExportGraphs(),
             QActionExportExcel(),
+            QActionExportDetailGraphs()
         ]
 

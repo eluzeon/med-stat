@@ -1,4 +1,5 @@
 from src.app.ui import start_gui
+from src import logger
 
 
 def on_startup() -> None:
@@ -6,5 +7,10 @@ def on_startup() -> None:
 
 
 def start_app() -> None:
-    on_startup()
-    start_gui()
+    try:
+        logger.app.info("Starting up app")
+        on_startup()
+        logger.app.info("Starting up GUI")
+        start_gui()
+    except Exception as e:
+        logger.app.exception("Unhandled exception", exc_info=e)

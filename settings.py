@@ -4,6 +4,9 @@
 import datetime
 import os
 
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEBUG = True
+
 CSV_INPUT_FIELDS_MAPPING = {
     ('Iteration', "Measurement iteration"): 'iteration',
     'Measurement time': 'measurement_time',
@@ -26,7 +29,7 @@ CSV_DELIMITER = ";"
 ######
 
 EXPORT_PATH = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
+    PROJECT_DIR,
     "output"
 )
 
@@ -52,3 +55,7 @@ SAME_MEAS_MAX_TIME_INTERVAL = datetime.timedelta(minutes=20)
 
 
 SCHEMA_DATETIME_FORMAT = "%m/%d/%Y %H:%M:%S %p"
+
+DOT_GRAPH_COLORS = 'rgbc'
+
+LOGGING_FILE_PATH = os.path.join(PROJECT_DIR, "app.logs")
