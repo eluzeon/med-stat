@@ -431,8 +431,8 @@ python-versions = ">=3.4"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.9"
-content-hash = "6c57990520bcc7db1e527312797887aa2aba6169df3c7b5d42c81192d071dd8f"
+python-versions = "^3.9"
+content-hash = "e814d06c54ae2eed780ba472151b2170be9ba05d7cc4a4a5309f93b3810411d4"
 
 [metadata.files]
 altgraph = [
