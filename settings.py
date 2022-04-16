@@ -54,7 +54,10 @@ EXPORT_DPI = 200
 SAME_MEAS_MAX_TIME_INTERVAL = datetime.timedelta(minutes=20)
 
 
-SCHEMA_DATETIME_FORMAT = "%m/%d/%Y %H:%M:%S %p"
+SCHEMA_DATETIME_FORMATS = [
+    "%m/%d/%Y %H:%M:%S %p",
+    "%d.%m.%Y %H:%M"
+]
 
 DOT_GRAPH_COLORS = 'rgbc'
 

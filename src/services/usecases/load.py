@@ -33,11 +33,15 @@ def get_all_groups() -> list[GroupPairSet]:
 
     builder = SimpleOrderPairSetBuilder()
     for group in groups:
+        pairs = builder.build_pairs(group.measurements)
+        if not pairs:
+            raise ValueError(f"Группа {group.object} - {group.side}: не нашлось пары до/после")
+
         out.append(
             GroupPairSet(
                 object=group.object,
                 side=group.side,
-                pairset=builder.build_pairs(group.measurements)
+                pairset=pairs
             )
         )
     return out

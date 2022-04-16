@@ -37,3 +37,5 @@ def load_file_content(file: str, raise_on_empty: bool = False) -> None:
             raise ValueError(
                 "Выбранный файл пуст или не удалось обработать его содержание"
             )
+        # build groups, to get error immediately
+        get_all_groups()

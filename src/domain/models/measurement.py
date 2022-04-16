@@ -1,19 +1,15 @@
 import dataclasses
 import datetime
 
-from marshmallow import Schema
-from marshmallow.fields import DateTime
 from marshmallow_dataclass import class_schema
 
-import settings
 from src.domain.models.measurable import Measurable
+from src.domain.schemas import MeasurementBaseSchema
 
 
 @dataclasses.dataclass
 class Measurement(Measurable):
-    measurement_time: datetime.datetime = dataclasses.field(
-        metadata={"format": settings.SCHEMA_DATETIME_FORMAT}
-    )
+    measurement_time: datetime.datetime
     pattern: str
     object: str
     dominant_side: str
@@ -23,7 +19,7 @@ class Measurement(Measurable):
     state: str
 
 
-MeasurementSchema = class_schema(Measurement)
+MeasurementSchema = class_schema(Measurement, base_schema=MeasurementBaseSchema)
 
 
 @dataclasses.dataclass
@@ -31,4 +27,4 @@ class Tap(Measurement):
     iteration: int
 
 
-TapSchema = class_schema(Tap)
+TapSchema = class_schema(Tap, base_schema=MeasurementBaseSchema)
