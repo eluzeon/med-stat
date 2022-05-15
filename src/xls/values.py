@@ -36,9 +36,6 @@ class ValueSet:
             try:
                 return ma_filed()._serialize(val, "", None)
             except ValidationError as e:
-                print(type(val))
-                print(val)
-                print(ma_filed)
                 raise ValueError(f"cannot dump value '{val}': dump error") from e
         raise ValueError(f"cannot dump value '{val}': field not found")
 

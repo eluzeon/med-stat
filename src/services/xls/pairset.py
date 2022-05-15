@@ -56,9 +56,9 @@ class AllGroupsPairSetSheet(Sheet):
             attr = field.name
             opt = ValueOptions(fmt)
             vs.add_value(row_i, getattr(pair.before, attr), options=opt)
-            vs.add_value(row_i, "", options=opt)
+            vs.add_value(row_i, getattr(pair.before, f"{attr}_error"), options=opt)
             vs.add_value(row_i, getattr(pair.after, attr), options=opt)
-            vs.add_value(row_i, "", options=opt)
+            vs.add_value(row_i, getattr(pair.after, f"{attr}_error"), options=opt)
             vs.add_value(row_i, getattr(pair_diff, attr), options=opt)
             vs.add_value(row_i, "", options=opt)
 
