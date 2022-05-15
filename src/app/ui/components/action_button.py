@@ -5,7 +5,8 @@ from PyQt6.QtWidgets import QWidget, QPushButton, QLabel, QFileDialog, QVBoxLayo
 
 from src import logger
 from src.app.ui.components.messages import message_error_occurred
-from src.app.ui.workers.export_worker import ExportGraphWorker, ExportExcelWorker, ExportDetailGraphsWorker
+from src.app.ui.workers.export_worker import ExportGraphWorker, ExportExcelWorker, ExportDetailGraphsWorker, \
+    ExportMeanGraphWorker
 from src.app.ui.workers.threads import run_in_thread, Worker
 
 
@@ -97,3 +98,14 @@ class QActionExportExcel(WorkerActionButton):
 
     def get_worker(self, *args, **kwargs) -> Worker:
         return ExportExcelWorker(*args, **kwargs)
+
+
+class QActionMeanGraph(WorkerActionButton):
+    def __init__(self):
+        super().__init__(
+            "Mean-графики",
+            "Вывести графики средних значений"
+        )
+
+    def get_worker(self, *args, **kwargs) -> Worker:
+        return ExportMeanGraphWorker(*args, **kwargs)

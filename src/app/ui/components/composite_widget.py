@@ -7,24 +7,32 @@ from src import logger
 from src.app.ui.components.actionbar import QActionGrid
 from src.app.ui.components.file_select import QFileSelect
 from src.app.ui.components.line import QHLine
-from src.app.ui.components.messages import message_error_occurred
+from src.app.ui.components.messages import message_error_occurred, message_warning
 from src.app.ui.state import state
 from src.app.ui.workers.load_worker import LoadWorker
 from src.app.ui.workers.threads import run_in_thread
+from src.domain.load_result import LoadResult
 
 
 class QCompositeWidget(QWidget):
     def __init__(self):
         super().__init__()
         self._file_path = None
+        self._init_ui()
 
+    def _init_ui(self):
         layout = QVBoxLayout()
         self.file_select = QFileSelect()
         self.file_select.on_file_selected.connect(self.on_file_selected)
-        self.action_bar = QActionGrid()
+        self.action_bar = QActionGrid.compare_analysis()
         self.action_bar.setDisabled(True)
 
+        self.action_bar_s = QActionGrid.single_analysis()
+        self.action_bar_s.setDisabled(True)
+
         layout.addWidget(self.file_select)
+        layout.addWidget(QHLine())
+        layout.addWidget(self.action_bar_s)
         layout.addWidget(QHLine())
         layout.addWidget(self.action_bar)
         self.setLayout(layout)
@@ -40,11 +48,15 @@ class QCompositeWidget(QWidget):
 
         worker = LoadWorker(path)
 
-        def on_finish() -> None:
+        def on_finish(result: LoadResult) -> None:
             logger.ui.info("File loaded")
-            self.action_bar.setDisabled(False)
+            self.action_bar_s.setDisabled(False)
             self.file_select.button.setDisabled(False)
             self.file_select.button.setText("Выбрать другой файл")
+            if result.ca_available:
+                self.action_bar.setDisabled(False)
+            else:
+                message_warning(self, result.ca_error)
 
         def on_fail(e: Exception):
             logger.ui.warn(f"File loading failed {e}")
@@ -61,5 +73,6 @@ class QCompositeWidget(QWidget):
             self.file_select.button.setDisabled(True)
             self.file_select.button.setText("Файл загружается...")
             self.action_bar.setDisabled(True)
+            self.action_bar_s.setDisabled(True)
 
         thread.started.connect(on_start)

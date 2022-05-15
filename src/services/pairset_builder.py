@@ -33,6 +33,7 @@ class SimpleOrderPairSetBuilder(PairSetBuilder):
         for meas in mss:
             if pack_last is None:
                 pack.append(meas)
+                packs.append(pack)
                 pack_last = meas
                 continue
 
@@ -41,9 +42,9 @@ class SimpleOrderPairSetBuilder(PairSetBuilder):
                 pack_last = meas
                 continue
 
-            packs.append(pack)
             pack = [meas]
             pack_last = meas
+            packs.append(pack)
 
         # проходимся по каждой группе и выбираем последнее измерение
         prev_pack: typing.Optional[list[Measurement]] = None

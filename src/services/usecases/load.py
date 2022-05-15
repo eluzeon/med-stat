@@ -1,14 +1,16 @@
 import typing
 from statistics import mean
 
+from src.domain.exceptions import PairSetBuilderError
 from src.domain.models.measurement import Measurement, Tap
 from src.domain.models.measurement_pair import PairSet, GroupPairSet
 from src.services.csv_reader import load_taps
 from src.services.dao import memoize
 from src.services.dao.measurements import save_measurements, get_filtered_measurements, object_filter, side_filter, \
-    get_measurements, save_all_groups, save_taps, GROUPS_KEY
+    get_measurements, save_taps, GROUPS_KEY
 from src.services.grouper import get_object_side_groups
 from src.services.pairset_builder import SimpleOrderPairSetBuilder
+from src.services.stat.func import stdev_sqrt
 
 
 def load_all_measurements(rows: typing.Iterable[str]) -> typing.Iterable[Measurement]:
@@ -35,7 +37,7 @@ def get_all_groups() -> list[GroupPairSet]:
     for group in groups:
         pairs = builder.build_pairs(group.measurements)
         if not pairs:
-            raise ValueError(f"Группа {group.object} - {group.side}: не нашлось пары до/после")
+            raise PairSetBuilderError(f"Группа {group.object} - {group.side}: не нашлось пары до/после")
 
         out.append(
             GroupPairSet(
@@ -55,6 +57,13 @@ def get_group_pairset(object_: str, side: str) -> PairSet:
 
     builder = SimpleOrderPairSetBuilder()
     return builder.build_pairs(mss)
+
+
+def safe_stdev(values: typing.Sequence[float]) -> float:
+    try:
+        return stdev_sqrt(values)
+    except ValueError:
+        return 0
 
 
 def taps_to_measurements(taps: typing.Iterable[Tap]) -> list[Measurement]:
@@ -82,21 +91,25 @@ def taps_to_measurements(taps: typing.Iterable[Tap]) -> list[Measurement]:
     out: list[Measurement] = []
     for group in groups:
         tap = group[0]
-        out.append(
-            Measurement(
-                frequency=mean(t.frequency for t in group),
-                stiffness=mean(t.stiffness for t in group),
-                decrement=mean(t.decrement for t in group),
-                relaxation=mean(t.relaxation for t in group),
-                creep=mean(t.creep for t in group),
-                measurement_time=tap.measurement_time,
-                pattern=tap.pattern,
-                object=tap.object,
-                dominant_side=tap.dominant_side,
-                position=tap.position,
-                side=tap.side,
-                location=tap.location,
-                state=tap.state,
-            )
+        m = Measurement(
+            frequency=mean(t.frequency for t in group),
+            stiffness=mean(t.stiffness for t in group),
+            decrement=mean(t.decrement for t in group),
+            relaxation=mean(t.relaxation for t in group),
+            creep=mean(t.creep for t in group),
+            measurement_time=tap.measurement_time,
+            pattern=tap.pattern,
+            object=tap.object,
+            dominant_side=tap.dominant_side,
+            position=tap.position,
+            side=tap.side,
+            location=tap.location,
+            state=tap.state,
         )
+        m.frequency_error = safe_stdev([t.frequency for t in group])
+        m.stiffness_error = safe_stdev([t.stiffness for t in group])
+        m.decrement_error = safe_stdev([t.decrement for t in group])
+        m.relaxation_error = safe_stdev([t.relaxation for t in group])
+        m.creep_error = safe_stdev([t.creep for t in group])
+        out.append(m)
     return out

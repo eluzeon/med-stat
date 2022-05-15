@@ -1,29 +1,34 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QGridLayout
+from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel
 
 from src.app.ui.components.action_button import QActionButton, QActionExportGraphs, QActionExportExcel, \
-    QActionExportDetailGraphs
+    QActionExportDetailGraphs, QActionMeanGraph
 
 
 class QActionGrid(QWidget):
-    DEFAULT_ACTION = "Выберите действие"
-
-    def __init__(self):
+    def __init__(self, buttons: list[QActionButton]):
         super().__init__()
+        self._buttons = buttons
+        self.setMinimumHeight(140)
         self._init_ui()
 
     def _init_ui(self) -> None:
         layout = QGridLayout()
 
-        buttons = self._buttons()
-        for i, button in enumerate(buttons):
+        for i, button in enumerate(self._buttons):
             layout.addWidget(button, i // 3 + 1, i % 3 + 1, Qt.AlignmentFlag.AlignCenter)
         self.setLayout(layout)
 
-    def _buttons(self) -> list[QActionButton]:
-        return [
-            QActionExportGraphs(),
-            QActionExportExcel(),
-            QActionExportDetailGraphs()
-        ]
+    @classmethod
+    def compare_analysis(cls):
+        return cls(
+            [
+                QActionExportGraphs(),
+                QActionExportExcel(),
+                QActionExportDetailGraphs()
+            ],
+        )
 
+    @classmethod
+    def single_analysis(cls):
+        return cls([QActionMeanGraph()])

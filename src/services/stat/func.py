@@ -10,9 +10,16 @@ def avg_calc(collection: PairSet, key: typing.Callable[[MeasurementPair], float]
     return statistics.mean(values)
 
 
+def stdev_sqrt(values: typing.Sequence[float]) -> float:
+    try:
+        return statistics.stdev(values) / math.sqrt(len(values))
+    except statistics.StatisticsError:
+        return 0
+
+
 def stdev_calc(collection: PairSet, key: typing.Callable[[MeasurementPair], float]) -> float:
     values = list(map(key, collection))
-    return statistics.stdev(values) / math.sqrt(len(values))
+    return stdev_sqrt(values)
 
 
 def diff(value1: float, value2: float) -> float:

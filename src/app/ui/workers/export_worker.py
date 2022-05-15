@@ -20,6 +20,15 @@ class ExportDetailGraphsWorker(Worker):
         uc.export_details_graphs(self.path)
 
 
+class ExportMeanGraphWorker(Worker):
+    def __init__(self, path: str):
+        super().__init__()
+        self.path = path
+
+    def run(self) -> None:
+        uc.export_mean_graphs(self.path)
+
+
 class ExportExcelWorker(Worker):
     def __init__(self, dir_path: str):
         super().__init__()

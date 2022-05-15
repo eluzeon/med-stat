@@ -38,5 +38,6 @@ def _stdev_stats(pairset: PairSet) -> Stat:
 def calc_stats(pairset: PairSet) -> StatResult:
     return StatResult(
         avg=_avg_stats(pairset),
-        stdev=_stdev_stats(pairset)
+        stdev=_stdev_stats(pairset),
+        size=len(pairset)
     )

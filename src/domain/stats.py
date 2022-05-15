@@ -14,6 +14,7 @@ class Stat:
 class StatResult:
     avg: Stat
     stdev: Stat
+    size: int = 0
 
 
 @dataclasses.dataclass
