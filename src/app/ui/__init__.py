@@ -10,5 +10,4 @@ def start_gui():
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
-    logger.app.info("Shutting down app")
     sys.exit(app.exec())

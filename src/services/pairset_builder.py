@@ -19,7 +19,12 @@ class SimpleOrderPairSetBuilder(PairSetBuilder):
     bound_interval: datetime.timedelta = settings.SAME_MEAS_MAX_TIME_INTERVAL
 
     def in_same_pack(self, m1: Measurement, m2: Measurement) -> bool:
-        return m2.measurement_time - m1.measurement_time < self.bound_interval
+        # "до" "после" считаются только измерения разница которых больше 20 минут
+        # и они находятся в разных днях
+        return (
+            m2.measurement_time - m1.measurement_time < self.bound_interval and
+            m2.measurement_time.date() == m1.measurement_time.date()
+        )
 
     def build_pairs(self, mss: typing.Iterable[Measurement]) -> PairSet:
         result = []

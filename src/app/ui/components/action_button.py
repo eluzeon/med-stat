@@ -5,8 +5,8 @@ from PyQt6.QtWidgets import QWidget, QPushButton, QLabel, QFileDialog, QVBoxLayo
 
 from src import logger
 from src.app.ui.components.messages import message_error_occurred
-from src.app.ui.workers.export_worker import ExportGraphWorker, ExportExcelWorker, ExportDetailGraphsWorker, \
-    ExportMeanGraphWorker
+from src.app.ui.workers.export_worker import ExportGraphWorker, ExportExcelWorker, ExportTimeCompareGraphsWorker, \
+    ExportMeanGraphWorker, ExportDetailGraphWorker
 from src.app.ui.workers.threads import run_in_thread, Worker
 
 
@@ -71,28 +71,28 @@ class QActionExportGraphs(WorkerActionButton):
     def __init__(self):
         super().__init__(
             "Diff-графики",
-            "Создает и выгружает графики в указанную папку"
+            "Выгружает графики изменений в процентах"
         )
 
     def get_worker(self, *args, **kwargs) -> Worker:
         return ExportGraphWorker(*args, **kwargs)
 
 
-class QActionExportDetailGraphs(WorkerActionButton):
+class QActionExportTimeCompareGraphs(WorkerActionButton):
     def __init__(self):
         super().__init__(
-            "Details-грифики",
-            "Выгружает детализированные графики"
+            "Compare-графики",
+            "Выгружает графики сравнивающие абсолютные значения \"до\" и \"после\""
         )
 
     def get_worker(self, *args, **kwargs) -> Worker:
-        return ExportDetailGraphsWorker(*args, **kwargs)
+        return ExportTimeCompareGraphsWorker(*args, **kwargs)
 
 
 class QActionExportExcel(WorkerActionButton):
     def __init__(self):
         super(QActionExportExcel, self).__init__(
-            "Выгрузить в EXCEL",
+            "Excel",
             "Выгрузка данных файла в EXCEL с подсчитанными данными"
         )
 
@@ -109,3 +109,14 @@ class QActionMeanGraph(WorkerActionButton):
 
     def get_worker(self, *args, **kwargs) -> Worker:
         return ExportMeanGraphWorker(*args, **kwargs)
+
+
+class QActionDetailedGraph(WorkerActionButton):
+    def __init__(self):
+        super().__init__(
+            "Detail-графики",
+            "Выводит абсолютные значение по времени по всем исследованиям"
+        )
+
+    def get_worker(self, *args, **kwargs) -> Worker:
+        return ExportDetailGraphWorker(*args, **kwargs)

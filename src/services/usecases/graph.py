@@ -2,6 +2,7 @@ import dataclasses
 import os
 import typing
 from collections import defaultdict
+from itertools import chain
 from statistics import mean
 
 from matplotlib import pyplot as plt
@@ -18,7 +19,7 @@ from src.graph.differ import DiffValue
 from src.graph.dots import build_dots_graph, DotValue
 from src.graph.model import MeasurableFigures
 from src.services.dao.measurements import get_all_groups_stats
-
+from src.utils import last
 
 T = typing.TypeVar("T")
 
@@ -48,8 +49,8 @@ class ObjectGroup(typing.Generic[T]):
             out.append(
                 ObjectGroup(
                     object=object_,
-                    left=data.get("Left"),
-                    right=data.get("Right")
+                    left=data.get("Left", []),
+                    right=data.get("Right", [])
                 )
             )
         return out
@@ -82,7 +83,7 @@ def stats_to_differ_graph(groups: typing.Optional[typing.Iterable[GroupStats]] =
     out_dict: dict[str, Figure] = {}
     for field, diffs in data_map.items():
         fig = differ.build_diff_graph(
-            label=field,
+            label=f"Изменение параметра {field} в процентах",
             values=diffs
         )
         if save_immediate:
@@ -107,7 +108,7 @@ def build_differ_and_save(groups: typing.Iterable[GroupStats], path: typing.Opti
     stats_to_differ_graph(groups, save_immediate=True, save_path=path)
 
 
-def single_pairset_to_detailed_graph(group: GroupPairSet) -> list[tuple[str, Figure]]:
+def single_pairset_to_timecompare_graph(group: GroupPairSet) -> list[tuple[str, Figure]]:
     pack = []
     for attr in get_measurable_field_names():
         before_values = [getattr(mp.before, attr) for mp in group.pairset]
@@ -130,18 +131,18 @@ def single_pairset_to_detailed_graph(group: GroupPairSet) -> list[tuple[str, Fig
                 title="After"
             ),
             xs=[t.strftime("%d.%m.%y %H:%M") for t in times],
-            title=title
+            title=f"Сравнение абсолютных значений \n \"до\" и \"после\" {title}"
         )
         pack.append((title, fig))
     return pack
 
 
-def pairset_groups_to_detailed_graph(groups: typing.Iterable[GroupPairSet],
+def pairset_groups_to_timecompare_graph(groups: typing.Iterable[GroupPairSet],
                                      save_immediate: bool = True,
                                      save_path: typing.Optional[str] = None) -> list[tuple[str, Figure]]:
     out = []
     for group in groups:
-        pack = single_pairset_to_detailed_graph(group)
+        pack = single_pairset_to_timecompare_graph(group)
         if save_immediate:
             for name, fig in pack:
                 fig.savefig(
@@ -155,11 +156,11 @@ def pairset_groups_to_detailed_graph(groups: typing.Iterable[GroupPairSet],
     return out
 
 
-def build_detail_graphs_and_save(groups: typing.Iterable[GroupPairSet], path: typing.Optional[str] = None) -> None:
+def build_timecompare_graphs_and_save(groups: typing.Iterable[GroupPairSet], path: typing.Optional[str] = None) -> None:
     if not path:
         path = settings.EXPORT_PATH
 
-    pairset_groups_to_detailed_graph(groups, save_immediate=True, save_path=path)
+    pairset_groups_to_timecompare_graph(groups, save_immediate=True, save_path=path)
 
 
 def build_mean_graphs_and_save(groups: typing.Iterable[ObjectSideGroup], path: typing.Optional[str] = None) -> None:
@@ -186,7 +187,7 @@ def build_mean_graphs_and_save(groups: typing.Iterable[ObjectSideGroup], path: t
             )
 
         fig = differ.build_diff_graph(
-            label=field,
+            label=f"График средний значений за все время \n по параметру {field}",
             values=values
         )
         fig.savefig(
@@ -196,3 +197,44 @@ def build_mean_graphs_and_save(groups: typing.Iterable[ObjectSideGroup], path: t
             dpi=settings.EXPORT_DPI_MAX
         )
         plt.close("all")
+
+
+def build_detailed_graphs_and_save(groups: typing.Iterable[ObjectSideGroup], path: str) -> None:
+    if not path:
+        path = settings.EXPORT_PATH
+
+    for field in measurable_fields:
+        for group in ObjectGroup.build(groups, lambda x: x.measurements):
+            xs, left_vs, left_errv, right_vl, right_errv = set(), [], [], [], []
+            for ms in chain(group.right, group.left):
+                xs.add(ms.measurement_time.date())
+            for x in xs:
+                r = last([rv for rv in group.right if rv.measurement_time.date() == x])
+                right_vl.append(None if r is None else getattr(r, field))
+                right_errv.append(None if r is None else getattr(r, f"{field}_error"))
+                l = last([lv for lv in group.left if lv.measurement_time.date() == x])
+                left_vs.append(None if l is None else getattr(l, field))
+                left_errv.append(None if l is None else getattr(l, f"{field}_error"))
+
+            fig = build_dots_graph(
+                DotValue(
+                    values=left_vs,
+                    values_err=left_errv,
+                    title="Left"
+                ),
+                DotValue(
+                    values=right_vl,
+                    values_err=right_errv,
+                    title="Right"
+                ),
+                xs=[date.strftime("%d.%m.%y") for date in xs],
+                title=f"Детализированный график значений \n {field} по времени - {group.object} "
+            )
+
+            fig.savefig(
+                os.path.join(
+                    path, f"{group.object} - {field}"
+                ),
+                dpi=settings.EXPORT_DPI_MIN
+            )
+            plt.close("all")
