@@ -12,8 +12,6 @@ def export_full_dir(dir_name: str) -> None:
     ok, fail = 0, 0
     for path, _, fnames in os.walk(dir_name):
         for fname in fnames:
-            if fname not in ['26.12.1993_Alla P.csv', '27.03.2015_Alexandra Nicolaeva.csv', '09.11.1974_Dmitry Zhukov.csv']:
-                continue
             export_dir_path = make_path(settings.EXPORT_PATH, fname.rsplit('.', 1)[0])
             print(f"handling file {fname} in {export_dir_path}")
             try:
