@@ -56,6 +56,7 @@ class QCompositeWidget(QWidget):
             if result.ca_available:
                 self.action_bar.setDisabled(False)
             else:
+                self.action_bar.setDisabled(True)
                 message_warning(self, result.ca_error)
 
         def on_fail(e: Exception):
