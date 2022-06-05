@@ -33,9 +33,3 @@ if __name__ == '__main__':
         "@/exports/minis"
     )
 
-
-"""
-09.11.1974_Dmitry Zhukov.csv
-27.03.2015_Alexandra Nicolaeva.csv
-26.12.1993_Alla P.csv
-"""

@@ -22,8 +22,8 @@ class SimpleOrderPairSetBuilder(PairSetBuilder):
         # "до" "после" считаются только измерения разница которых больше 20 минут
         # и они находятся в разных днях
         return (
-            m2.measurement_time - m1.measurement_time < self.bound_interval and
-            m2.measurement_time.date() == m1.measurement_time.date()
+            m2.measurement_time - m1.measurement_time < self.bound_interval or
+            m2.measurement_time.date() != m1.measurement_time.date()
         )
 
     def build_pairs(self, mss: typing.Iterable[Measurement]) -> PairSet:

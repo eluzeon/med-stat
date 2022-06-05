@@ -130,7 +130,7 @@ def single_pairset_to_timecompare_graph(group: GroupPairSet) -> list[tuple[str, 
                 values_err=after_errors,
                 title="After"
             ),
-            xs=[t.strftime("%d.%m.%y %H:%M") for t in times],
+            xs=[t.strftime("%d.%m.%y") for t in times],
             title=f"Сравнение абсолютных значений \n \"до\" и \"после\" {title}"
         )
         pack.append((title, fig))
@@ -208,6 +208,7 @@ def build_detailed_graphs_and_save(groups: typing.Iterable[ObjectSideGroup], pat
             xs, left_vs, left_errv, right_vl, right_errv = set(), [], [], [], []
             for ms in chain(group.right, group.left):
                 xs.add(ms.measurement_time.date())
+            xs = sorted(xs)
             for x in xs:
                 r = last([rv for rv in group.right if rv.measurement_time.date() == x])
                 right_vl.append(None if r is None else getattr(r, field))
