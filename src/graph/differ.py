@@ -30,7 +30,8 @@ def build_diff_graph(label: str, values: typing.Iterable[DiffValue],
                      right_color: typing.Optional[str] = None,
                      left_color: typing.Optional[str] = None,
                      width: typing.Optional[float] = 0.45,
-                     round_digs: typing.Optional[int] = 2) -> Figure:
+                     round_digs: typing.Optional[int] = 2,
+                     y_label: typing.Optional[str] = None) -> Figure:
     labels = [v.name for v in values]
 
     lefts = [round(v.left, round_digs) for v in values]
@@ -47,7 +48,8 @@ def build_diff_graph(label: str, values: typing.Iterable[DiffValue],
 
     add_bartext(values, width)
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    ax.set_ylabel(label)
+    if y_label:
+        ax.set_ylabel(y_label)
     ax.set_title(label)
     ax.set_xticks(x, labels, rotation=70)
     ax.legend()
@@ -70,5 +72,6 @@ if __name__ == '__main__':
                 size_left=30,
                 size_right=10
             )
-        ]
+        ],
+        y_label="[H/m]"
     ).show()

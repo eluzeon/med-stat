@@ -21,6 +21,7 @@ class DotValue:
 def build_dots_graph(*values: DotValue,
                      xs: list[str],
                      title: str,
+                     y_title: typing.Optional[str] = None,
                      colors: typing.Optional[list[str]] = None) -> Figure:
     if not colors:
         colors = settings.DOT_GRAPH_COLORS
@@ -50,6 +51,8 @@ def build_dots_graph(*values: DotValue,
     fig.legend(handles=bars)
     ax.set_title(title)
     ax.set_xticks(x_total, xs, rotation=70)
+    if y_title:
+        ax.set_ylabel(y_title)
 
     fig.tight_layout()
     return fig
@@ -60,5 +63,6 @@ if __name__ == '__main__':
         DotValue([12, 13, 10, None, 10, 13], [0.5, 0.2, 1, None, 0.1, 0.1], "test 1"),
         DotValue([10, 11, 10, 12, 10, 11], [0.1, 0.3, 1, 0.4, 0.4, 0.3], "test 2"),
         xs=["21/01", "22/01", "23/01", "24/01", "25/01", '26/01'],
-        title="Stiffness"
+        title="Stiffness",
+        y_title="[H/m]"
     ).show()

@@ -27,3 +27,16 @@ def get_measurable_field_names() -> list[str]:
 
 
 measurable_fields = get_measurable_field_names()
+
+
+def get_field_units(field: str) -> str:
+    if field == "frequency":
+        return "Гц"
+    if field == "stiffness":
+        return "Н/м"
+    if field == "decrement":
+        return ""
+    if field == "relaxation":
+        return "мс"
+    if field == "creep":
+        return "число Деборы"

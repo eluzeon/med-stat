@@ -10,7 +10,7 @@ from matplotlib.figure import Figure
 
 import settings
 from src.domain.models import Measurable
-from src.domain.models.measurable import get_measurable_field_names, measurable_fields
+from src.domain.models.measurable import get_measurable_field_names, measurable_fields, get_field_units
 from src.domain.models.measurement_pair import GroupPairSet
 from src.domain.models.object_side_group import ObjectSideGroup
 from src.domain.stats import GroupStats, StatResult
@@ -84,7 +84,8 @@ def stats_to_differ_graph(groups: typing.Optional[typing.Iterable[GroupStats]] =
     for field, diffs in data_map.items():
         fig = differ.build_diff_graph(
             label=f"Изменение параметра {field} в процентах",
-            values=diffs
+            values=diffs,
+            y_label=f"изменение в %"
         )
         if save_immediate:
             fig.savefig(
@@ -131,7 +132,8 @@ def single_pairset_to_timecompare_graph(group: GroupPairSet) -> list[tuple[str, 
                 title="After"
             ),
             xs=[t.strftime("%d.%m.%y") for t in times],
-            title=f"Сравнение абсолютных значений \n \"до\" и \"после\" {title}"
+            title=f"Сравнение абсолютных значений \n \"до\" и \"после\" {title}",
+            y_title=f"[{get_field_units(attr)}]"
         )
         pack.append((title, fig))
     return pack
@@ -188,7 +190,8 @@ def build_mean_graphs_and_save(groups: typing.Iterable[ObjectSideGroup], path: t
 
         fig = differ.build_diff_graph(
             label=f"График средний значений за все время \n по параметру {field}",
-            values=values
+            values=values,
+            y_label=f"[{get_field_units(field)}]"
         )
         fig.savefig(
             os.path.join(
@@ -229,7 +232,8 @@ def build_detailed_graphs_and_save(groups: typing.Iterable[ObjectSideGroup], pat
                     title="Right"
                 ),
                 xs=[date.strftime("%d.%m.%y") for date in xs],
-                title=f"Детализированный график значений \n {field} по времени - {group.object} "
+                title=f"Детализированный график значений \n {field} по времени - {group.object} ",
+                y_title=f"[{get_field_units(field)}]"
             )
 
             fig.savefig(
